@@ -11,7 +11,7 @@ vector_store = vector_store_init()
 add_candidates(vector_store, chunks)  
 
 # Step 3: Query
-query = "who suitable for AI/ML Engineer"
+query = "what skills Mariam has"
 response = process_query(query)
 
 print("Response:\n", response)
