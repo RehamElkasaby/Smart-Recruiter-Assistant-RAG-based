@@ -11,10 +11,10 @@ def vector_store_init():
         embedding_function=embedding
     )
 
-def add_candidates(vector_store, documents):  
+def add_candidates(vector_store, documents): 
     vector_store.add_documents(documents)
 
-def search_candidate(vector_store, query, top_k=2, filter_by=None):
+def search_candidate(vector_store, query, top_k=3, filter_by=None):
     if filter_by:
         if len(filter_by) > 1:
             filter_by = {"$and": [{k: v} for k, v in filter_by.items()]}

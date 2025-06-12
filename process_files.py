@@ -1,60 +1,81 @@
-from typing import List
+# process_files.py
+import os
+from typing import List, Tuple
 import pdfplumber
 from docx import Document
 from langchain.schema import Document as LangDocument
-import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-def read_pdf(file_path):
+def extract_name_from_filename(filename: str) -> str:
+    base = os.path.splitext(filename)[0]
+    # Remove special characters and normalize
+    return ' '.join(word.capitalize() for word in base.replace('_', ' ').replace('-', ' ').split())
+
+def read_pdf(file_path: str) -> str:
     text = ""
     with pdfplumber.open(file_path) as pdf:
         for page in pdf.pages:
-            # Improved PDF extraction
             text += page.extract_text(x_tolerance=1, y_tolerance=1) + "\n"
     return text
 
-def read_docs(file_path):
+def read_docx(file_path: str) -> str:
     doc = Document(file_path)
-    return "\n".join([para.text for para in doc.paragraphs])
+    return "\n".join(p.text for p in doc.paragraphs)
 
-def load_documents(file_path): 
+def load_documents(file_path: str) -> LangDocument:
     if file_path.endswith('.pdf'):
         text = read_pdf(file_path)
     elif file_path.endswith('.docx'):
-        text = read_docs(file_path)
+        text = read_docx(file_path)
     else:
         with open(file_path, 'r') as f:
             text = f.read()
 
+    if not text:
+        raise ValueError(f"Empty content in {file_path}")
+
+    filename = os.path.basename(file_path)
+    candidate_name = extract_name_from_filename(filename)
+    
     return LangDocument(
         page_content=text,
-        metadata={"source": os.path.basename(file_path), "document_type": "full_cv"}
+        metadata={
+            "source": filename,
+            "candidate_name": candidate_name,  # Store extracted name
+            "document_type": "full_cv"
+        }
     )
 
-def split_documents(doc): 
+def split_documents(doc: LangDocument) -> Tuple[List[LangDocument], str]:
+    if not doc:
+        return [], ""
+
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
+        chunk_size=100,
+        chunk_overlap=10,
         length_function=len
     )
-    
-    # Create splits with proper metadata
     splits = text_splitter.split_documents([doc])
+
     cv_name = doc.metadata["source"]
+    candidate_name = doc.metadata["candidate_name"]
     
     for split in splits:
-        split.metadata = {
-            "source": cv_name,
+        split.metadata.update({
             "is_section": True,
             "full_doc_reference": cv_name,
+            "candidate_name": candidate_name,  
             "document_type": "cv_section"
-        }
-    return splits
+        })
+    return splits, candidate_name
 
-def process_uploaded_files(file_paths):
+def process_uploaded_files(file_paths: List[str]) -> Tuple[List[LangDocument], List[str]]:
     all_chunks = []
+    all_candidate_names = []
+
     for file_path in file_paths:
         full_doc = load_documents(file_path)
-        chunks = split_documents(full_doc)
+        chunks, candidate_name = split_documents(full_doc)
         all_chunks.extend(chunks)
-    return all_chunks
+        all_candidate_names.append(candidate_name)
+    return all_chunks, all_candidate_names
