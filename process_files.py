@@ -1,3 +1,4 @@
+%%writefile process_files.py
 # process_files.py
 import os
 from typing import List, Tuple
@@ -36,7 +37,7 @@ def load_documents(file_path: str) -> LangDocument:
 
     filename = os.path.basename(file_path)
     candidate_name = extract_name_from_filename(filename)
-    
+
     return LangDocument(
         page_content=text,
         metadata={
@@ -52,34 +53,30 @@ def split_documents(doc: LangDocument) -> Tuple[List[LangDocument], str]:
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
-        chunk_overlap=100,
+        chunk_overlap=200,
         length_function=len
     )
     splits = text_splitter.split_documents([doc])
 
     cv_name = doc.metadata["source"]
     candidate_name = doc.metadata["candidate_name"]
-    
+
     for split in splits:
         split.metadata.update({
             "is_section": True,
             "full_doc_reference": cv_name,
-            "candidate_name": candidate_name,  
+            "candidate_name": candidate_name,
             "document_type": "cv_section"
         })
     return splits, candidate_name
 
 def process_uploaded_files(file_paths: List[str]) -> Tuple[List[LangDocument], List[str]]:
-    all_docs = []  # Stores both full CVs and chunks
+    all_chunks = []
     all_candidate_names = []
 
     for file_path in file_paths:
         full_doc = load_documents(file_path)
         chunks, candidate_name = split_documents(full_doc)
-        
-        # Add both full doc and chunks
-        all_docs.append(full_doc)
-        all_docs.extend(chunks)
-        
+        all_chunks.extend(chunks)
         all_candidate_names.append(candidate_name)
-    return all_docs, all_candidate_names
+    return all_chunks, all_candidate_names
