@@ -1,4 +1,3 @@
-%%writefile process_files.py
 # process_files.py
 import os
 from typing import List, Tuple

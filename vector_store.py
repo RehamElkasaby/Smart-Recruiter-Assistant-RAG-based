@@ -1,4 +1,3 @@
-%%writefile vector_store.py
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain.schema import Document

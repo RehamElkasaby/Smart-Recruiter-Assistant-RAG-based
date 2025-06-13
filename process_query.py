@@ -1,6 +1,5 @@
-%%writefile process_query.py
 from vector_store import vector_store_init, search_candidate, get_full_cv
-from RAG_engine import initialize_llm, generate_response , generate_response_who , generate_summary_response
+from RAG_engin import initialize_llm, generate_response , generate_response_who , generate_summary_response
 from typing import List
 from process_files import process_uploaded_files
 import os
@@ -11,7 +10,7 @@ def process_query(query: str, vector_store=None, llm=None):
     if not llm:
         llm = initialize_llm()
 
-    file_paths = ["/content/Mariam-Osama.pdf", "/content/Reham_Elkasaby.pdf","/content/Hager elkasapy.pdf"]
+    file_paths = ["CVs/Mariam-Osama.pdf", "CVs/Reham_Elkasaby.pdf","CVs/Hager elkasapy.pdf"]
     _, candidate_names = process_uploaded_files(file_paths)
 
     if is_who_question(query):

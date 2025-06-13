@@ -1,4 +1,3 @@
-%%writefile RAG_engine.py
 # RAG_engine.py (updated)
 import os
 from langchain_ollama.llms import OllamaLLM
