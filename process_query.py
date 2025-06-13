@@ -54,9 +54,8 @@ def answer_summarize(query: str, vector_store, llm, candidate_names: List[str]) 
         results = search_candidate(
             vector_store,
             query,
-            top_k=1,
+            top_k=2,
             filter_by={
-                "document_type": "full_cv",
                 "candidate_name": name
             },
         )
