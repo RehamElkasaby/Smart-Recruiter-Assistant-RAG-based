@@ -86,54 +86,28 @@ def generate_response_who(llm, query: str, context: List, candidate_names: List[
         "K" : 3
     })
 
-def Response_summurize_skills(llm, query: str, context: List, candidate_names: List[str]) -> str:
-    # Format context with candidate names
-    context_str = ""
-    for doc in context:
-        name = doc.metadata.get("candidate_name", "Unknown Candidate")
-        context_str += f"--- CANDIDATE: {name} ---\n{doc.page_content}\n\n"
-    
-    valid_names = ", ".join(candidate_names)
-    
-    prompt = ChatPromptTemplate.from_template(
-        """
-       **Role**: You are an expert CV parser that creates 3–4 line professional summaries highlighting key candidate details.  
+def generate_summary_response(llm, query: str, context: List[str]) -> str:
+    context_str = "\n\n".join([doc.page_content for doc in context])
 
-    **Task**:  
-    1. ONLY use these candidate names: {valid_names}
-    3. Analyze the provided CV text.  
-    4. Extract and summarize:  
-    - **Key Skills** (3–5 most relevant hard skills)  
-    - **Most Recent Job Title** (with company if available)  
-    - **Years of Experience** (total relevant years)  
-    - **Educational Background** (highest degree + institution)  
-    5. Format concisely for recruiter quick-scanning.  
+    prompt = ChatPromptTemplate.from_template (
 
-    **Input**:  
-    {CV_TEXT}  
-    {question}
+          """You are a professional recruiter assistant. Generate a concise 4-part summary for using ONLY the following CV data:
 
-    **Output Format**:  
-    **[Full Name]**  
-    - **Skills**: [Skill 1], [Skill 2], [Skill 3]  
-    - **Recent Role**: [Job Title] at [Company] ([Years] years of experience)  
-    - **Education**: [Degree] from [University]  
+      Candidate CV Data:
+      {context}
 
-    **Rules**:  
-    - Prioritize skills mentioned in multiple CV sections.  
-    - If years of experience aren’t explicit, infer from work history.  
-    - Use abbreviations for degrees (e.g., "BSc" instead of "Bachelor of Science").  
-    - Never invent information. Write "Not specified" for missing data.  
-    """
-    )
-    
+      Rules:
+      - Only use information explicitly stated in the CV data
+      - Never guess or assume unstated details
+      - If data is missing, write "Not specified"
+      - Skills must be verbatim from the CV
+
+
+      """
+      )
     chain = prompt | llm
-    return chain.invoke({
-        "CV_TEXT": context_str, 
-        "question": query,
-        "valid_names": valid_names,
-        "K" : 3
-    })
+    return chain.invoke({"context": context_str })
+
 def generate_response(llm, query: str, context: List, candidate_names: List[str]) -> str:
     # Format context with candidate names
     context_str = ""
@@ -165,5 +139,4 @@ def generate_response(llm, query: str, context: List, candidate_names: List[str]
         "context": context_str, 
         "question": query,
         "valid_names": valid_names,
-        "K" : 3
     })
