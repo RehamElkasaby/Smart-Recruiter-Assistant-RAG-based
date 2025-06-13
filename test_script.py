@@ -11,7 +11,7 @@ vector_store = vector_store_init()
 add_candidates(vector_store, chunks)  
 
 # Step 3: Query
-query = "who studied Machine learning"
+query = "Who can you recommend to be NLP engineer"
 response = process_query(query)
 
 print("Response:\n", response)

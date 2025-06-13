@@ -13,13 +13,16 @@ def vector_store_init():
 
 def add_candidates(vector_store, documents): 
     vector_store.add_documents(documents)
-
+    
 def search_candidate(vector_store, query, top_k=3, filter_by=None):
-    if filter_by:
-        if len(filter_by) > 1:
-            filter_by = {"$and": [{k: v} for k, v in filter_by.items()]}
-        else:
-            filter_by = filter_by  
+    # Handle multiple filters correctly
+    if filter_by and len(filter_by) > 1:
+        filter_conditions = [{"metadata." + k: v} for k, v in filter_by.items()]
+        filter_by = {"$and": filter_conditions}
+    elif filter_by:
+        key = list(filter_by.keys())[0]
+        filter_by = {"metadata." + key: filter_by[key]}
+    
     return vector_store.similarity_search(
         query=query,
         k=top_k,

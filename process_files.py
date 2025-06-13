@@ -51,8 +51,8 @@ def split_documents(doc: LangDocument) -> Tuple[List[LangDocument], str]:
         return [], ""
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=100,
-        chunk_overlap=10,
+        chunk_size=1000,
+        chunk_overlap=100,
         length_function=len
     )
     splits = text_splitter.split_documents([doc])
@@ -70,12 +70,16 @@ def split_documents(doc: LangDocument) -> Tuple[List[LangDocument], str]:
     return splits, candidate_name
 
 def process_uploaded_files(file_paths: List[str]) -> Tuple[List[LangDocument], List[str]]:
-    all_chunks = []
+    all_docs = []  # Stores both full CVs and chunks
     all_candidate_names = []
 
     for file_path in file_paths:
         full_doc = load_documents(file_path)
         chunks, candidate_name = split_documents(full_doc)
-        all_chunks.extend(chunks)
+        
+        # Add both full doc and chunks
+        all_docs.append(full_doc)
+        all_docs.extend(chunks)
+        
         all_candidate_names.append(candidate_name)
-    return all_chunks, all_candidate_names
+    return all_docs, all_candidate_names

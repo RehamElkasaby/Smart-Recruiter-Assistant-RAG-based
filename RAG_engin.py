@@ -56,20 +56,6 @@ def generate_response_who(llm, query: str, context: List, candidate_names: List[
         - Industry-specific keywords.  
         - Cultural fit (e.g., startups vs. corporate).  
 
-        **Output Format**:  
-        ### **Top Candidates for [Job Title]**  
-        #### **1. [Candidate Name]**  
-        - **Match Score**: 92%  
-        - **Key Strengths**:  
-        - 5+ years of Python (exact match for "Senior Python Developer").  
-        - Led 3 machine learning projects (matches "team leadership" requirement).  
-        - MSc in Computer Science (exact degree match).  
-        - **Potential Gaps**:  
-        - Limited cloud experience (AWS/Azure not mentioned).  
-        - **Recommendation**: ✅ Strong Fit  
-
-        #### **2. [Candidate Name]**  
-        - **Match Score**: 75%  
         ...  
 
         **Rules**:  
@@ -86,27 +72,32 @@ def generate_response_who(llm, query: str, context: List, candidate_names: List[
         "K" : 3
     })
 
-def generate_summary_response(llm, query: str, context: List[str]) -> str:
-    context_str = "\n\n".join([doc.page_content for doc in context])
+# RAG_engine.py (updated)
+# ... existing imports ...
 
-    prompt = ChatPromptTemplate.from_template (
+def generate_summary_response(llm, query: str, context: List) -> str:
+    context_str = ""
+    for doc in context:
+        name = doc.metadata.get("candidate_name", "Unknown Candidate")
+        context_str += f"--- CANDIDATE: {name} ---\n{doc.page_content}\n\n"
 
-          """You are a professional recruiter assistant. Generate a concise 4-part summary for using ONLY the following CV data:
-
-      Candidate CV Data:
-      {context}
-
-      Rules:
-      - Only use information explicitly stated in the CV data
-      - Never guess or assume unstated details
-      - If data is missing, write "Not specified"
-      - Skills must be verbatim from the CV
-
-
-      """
-      )
+    prompt = ChatPromptTemplate.from_template(
+        """You are a professional recruiter assistant. Generate comprehensive summaries using ONLY full CV data:
+        
+        Candidate CV Data:
+        {context}
+        
+        Rules:
+        - Create structured summaries (experience, skills, education)
+        - Include quantitative achievements where available
+        - Maintain original terminology from CVs
+        - Never invent unstated details
+        - Use "Not specified" for missing information
+        """
+    )
     chain = prompt | llm
-    return chain.invoke({"context": context_str })
+    return chain.invoke({"context": context_str})
+
 
 def generate_response(llm, query: str, context: List, candidate_names: List[str]) -> str:
     # Format context with candidate names
