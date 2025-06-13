@@ -2,12 +2,26 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain.schema import Document
 import os
+import shutil
+import time
 
 def vector_store_init():
-    embedding = OllamaEmbeddings(model="mxbai-embed-large")
+    # Clear existing DB to prevent dimension conflicts
+    persist_dir = "./chroma_langchain_db"
+    if os.path.exists(persist_dir):
+        for _ in range(3):  # Retry up to 3 times
+            try:
+                shutil.rmtree(persist_dir)
+                break
+            except PermissionError:
+                time.sleep(1)  # Wait before retrying
+    
+    # Use lightweight CPU-friendly embedding model
+    embedding = OllamaEmbeddings(model="all-minilm")
+    
     return Chroma(
         collection_name="recruiter_candidates",
-        persist_directory="./chroma_langchain_db",
+        persist_directory=persist_dir,
         embedding_function=embedding
     )
 

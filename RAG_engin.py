@@ -6,7 +6,7 @@ from typing import List
 
 def initialize_llm():
     return OllamaLLM(
-        model="llama3.2",
+        model="phi3",
         temperature=0
     )
 
