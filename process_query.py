@@ -33,6 +33,7 @@ def process_query(query: str, vector_store=None, llm=None):
         return answer_summarize(query, vector_store, llm, candidate_names)
     if is_find_job(query):
         summary = answer_summarize(query, vector_store, llm, candidate_names)
+        print(summary)
         return answer_recommend_jobs(summary, llm)
     return answer_normal_question(query, vector_store, llm,candidate_names)
 
@@ -77,7 +78,6 @@ def answer_summarize(query: str, vector_store, llm, candidate_names: List[str]) 
             query,
             top_k=1,
             filter_by={
-                "document_type": "full_cv",
                 "candidate_name": name
             },
         )
@@ -95,7 +95,6 @@ def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
     os.environ["TAVILY_API_KEY"] = "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"
     tavily = TavilySearch(
         max_results=5,
-        include_domains=["linkedin.com"],
         search_depth="advanced"
     )
 
@@ -112,20 +111,18 @@ def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
         try:
             search_results = tavily.invoke(query)
             
-            # Handle case where response is a string (error message)
             if isinstance(search_results, str):
                 print(f"Search API returned error: {search_results}")
                 continue
                 
-            # Handle case where results are in the expected format
             if isinstance(search_results, dict) and "results" in search_results:
                 for r in search_results.get("results", [])[:2]:
-                    if isinstance(r, dict):  # Ensure each result is a dictionary
+                    if isinstance(r, dict): 
                         results.append({
                             "title": r.get("title", "Job Opportunity"),
                             "url": r.get("url", "#"),
-                            "company": r.get("source", "Unknown Company")
                         })
+                    
             else:
                 print(f"Unexpected search results format: {type(search_results)}")
         except Exception as e:

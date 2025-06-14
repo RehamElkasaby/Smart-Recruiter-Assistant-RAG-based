@@ -110,7 +110,7 @@ def generate_response(llm, query: str, context: List, candidate_names: List[str]
         """
         **Role**: You are an AI Recruiting Assistant that is expert to answer from CVs depend on that Inputs.
          **Inputs**:
-        - Job Description: "{question}"
+        - Questions: "{question}"
         - Candidate CVs:
         {context}
 
@@ -118,7 +118,6 @@ def generate_response(llm, query: str, context: List, candidate_names: List[str]
         1. ONLY use these candidate names: {valid_names}
         2. NEVER invent new names or use names not in this list
         3. If a name isn't in the context, say "I don't have information about that candidate"
-        4. For comparison questions, list candidates using ONLY names from the valid list
     """
     )
 

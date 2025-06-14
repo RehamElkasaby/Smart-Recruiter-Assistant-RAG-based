@@ -12,7 +12,8 @@ add_candidates(vector_store, chunks)
 print("*******************************************************")
 
 
-query = """what Mariam Osama phone number have"""
+
+query = """ what Mariam Osama Email address """
 response = process_query(query)
 
 print("Response:\n", response)
