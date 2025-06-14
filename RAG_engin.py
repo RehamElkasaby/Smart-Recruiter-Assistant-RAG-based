@@ -59,7 +59,9 @@ def generate_response_who(llm, query: str, context: List, candidate_names: List[
         **Rules**:
         - Never invent skills/experiences. Say "Not mentioned" for gaps.
         - Prioritize candidates with exact skill matches.
-        - Explain scores transparently (e.g., "+20% for Python expertise").  """
+        - Explain scores transparently (e.g., "+20% for Python expertise"). 
+        
+        """
     )
 
     chain = prompt | llm

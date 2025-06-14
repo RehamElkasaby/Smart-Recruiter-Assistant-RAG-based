@@ -12,11 +12,7 @@ add_candidates(vector_store, chunks)
 print("*******************************************************")
 
 
-query = """who is suitable for thes job We are seeking a highly motivated AI Engineer 
-with a strong focus on OpenAI technologies to join our growing team. The ideal candidate will have a deep understanding of AI models,
-multi-agent systems, and the ability to design, develop, and implement intelligent agents capable of autonomous problem-solving and decision-making.
-Your work will contribute to creating innovative AI-driven applications and solutions that integrate cutting-edge advancements in artificial intelligence, 
-including GPT models, reinforcement learning, and natural language processing."""
+query = """what Mariam Osama phone number have"""
 response = process_query(query)
 
 print("Response:\n", response)
