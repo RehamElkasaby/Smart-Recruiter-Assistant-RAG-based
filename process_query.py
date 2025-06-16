@@ -9,7 +9,8 @@ from langchain_tavily import TavilySearch
 # Global flag to track if documents have been added
 DOCUMENTS_ADDED = False
 
-def process_query(query: str, vector_store=None, llm=None):
+file_paths = ["CVs/Mariam-Osama.pdf", "CVs/Reham_Elkasaby.pdf", "CVs/Hager elkasapy.pdf"]
+def process_query(query: str, vector_store=None, llm=None,file_paths=file_paths):
     global DOCUMENTS_ADDED
     
     if not vector_store:
@@ -17,8 +18,7 @@ def process_query(query: str, vector_store=None, llm=None):
     if not llm:
         llm = initialize_llm()
     
-    file_paths = ["CVs/Mariam-Osama.pdf", "CVs/Reham_Elkasaby.pdf", "CVs/Hager elkasapy.pdf"]
-    
+
     # Only add documents once per session
     if not DOCUMENTS_ADDED:
         chunks, candidate_names = process_uploaded_files(file_paths)
@@ -95,8 +95,8 @@ def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
     os.environ["TAVILY_API_KEY"] = "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"
     tavily = TavilySearch(
         max_results=5,
-        search_depth="advanced"
-    )
+        search_depth="advanced",
+    )    
 
     prompt = f"""Based on this summary, generate {k} job search queries:
     {summary}

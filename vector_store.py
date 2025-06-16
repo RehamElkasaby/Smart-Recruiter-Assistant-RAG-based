@@ -6,7 +6,6 @@ import shutil
 import time
 
 def vector_store_init():
-    # Clear existing DB to prevent dimension conflicts
     persist_dir = "./chroma_langchain_db"
     if os.path.exists(persist_dir):
         for _ in range(3):  # Retry up to 3 times
@@ -14,9 +13,8 @@ def vector_store_init():
                 shutil.rmtree(persist_dir)
                 break
             except PermissionError:
-                time.sleep(1)  # Wait before retrying
+                time.sleep(1) 
     
-    # Use lightweight CPU-friendly embedding model
     embedding = OllamaEmbeddings(model="all-minilm")
     
     return Chroma(
