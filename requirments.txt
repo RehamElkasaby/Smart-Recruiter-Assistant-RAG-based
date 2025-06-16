@@ -1,5 +1,6 @@
-streamlit
-streamlit_lottie
+Requests==2.32.3
+streamlit==1.45.1
+streamlit_lottie==0.0.5
 langchain
 langchain-ollama
 langchain-chroma
