@@ -1,9 +1,11 @@
-from langchain_ollama import OllamaEmbeddings
+#from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain.schema import Document
 import os
 import shutil
 import time
+from llm_config import llm, embeddings
+
 
 def vector_store_init():
     persist_dir = "./chroma_langchain_db"
@@ -15,12 +17,12 @@ def vector_store_init():
             except PermissionError:
                 time.sleep(1) 
     
-    embedding = OllamaEmbeddings(model="all-minilm")
+    #embedding = OllamaEmbeddings(model="all-minilm")
     
     return Chroma(
         collection_name="recruiter_candidates",
         persist_directory=persist_dir,
-        embedding_function=embedding
+        embedding_function=embeddings 
     )
 
 def add_candidates(vector_store, documents):

@@ -1,6 +1,6 @@
 import sys
-import pysqlite3
-sys.modules["sqlite3"] = pysqlite3
+#import pysqlite3
+#sys.modules["sqlite3"] = pysqlite3
 import pandas as pd
 import os
 import shutil
@@ -11,6 +11,8 @@ import requests
 from process_files import process_uploaded_files
 from process_query import process_query
 from vector_store import vector_store_init, add_candidates
+from llm_config import llm, embeddings
+
 
 
 # Page Config
@@ -274,7 +276,9 @@ def cv_parser():
         
         # Step 4: Process user query
         status_text.text("💬 Generating response...")
-        response = process_query(user_query,file_paths=temp_paths)
+        response = process_query(user_query,llm=llm,file_paths=temp_paths)
+        
+        
         
         # Step 5: Clean up temporary files
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -286,7 +290,9 @@ def cv_parser():
         # Display the response in a visually appealing way
         if user_query and user_query.lower().startswith("find"):
             st.subheader("🔍 Search Results")
-            for item in response:
+
+            
+            for item in response: # list of dict
                 if isinstance(item, dict):
                     title = item.get("title", "Job Opportunity")
                     url = item.get("url", "#")
@@ -307,7 +313,7 @@ def cv_parser():
                     line-height: 1.6;
                     margin-top: 20px;
                 '>
-                    {response}
+                    {response.content}
                 </div>
             """, unsafe_allow_html=True)
 

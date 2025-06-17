@@ -1,14 +1,20 @@
 # RAG_engine.py (updated)
 import os
-from langchain_ollama.llms import OllamaLLM
+#from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from typing import List
+from llm_config import llm, embeddings
+from langchain_core.runnables import RunnablePassthrough
+
 
 def initialize_llm():
-    return OllamaLLM(
-        model="phi3",
-        temperature=0
-    )
+     from llm_config import llm, embeddings
+
+#     return OllamaLLM(
+#         model="phi3",
+#         temperature=0
+#     )
+     return llm
 
 def generate_response_who(llm, query: str, context: List, candidate_names: List[str]) -> str:
     # Format context with candidate names
@@ -64,7 +70,12 @@ def generate_response_who(llm, query: str, context: List, candidate_names: List[
         """
     )
 
-    chain = prompt | llm
+    chain ={
+        "context": RunnablePassthrough(),
+        "question": RunnablePassthrough(),
+        "valid_names": RunnablePassthrough(),
+        "K":RunnablePassthrough()
+    }|prompt | llm
     return chain.invoke({
         "context": context_str,
         "question": query,
@@ -92,7 +103,10 @@ def generate_summary_response(llm, query: str, context: List[str]) -> str:
 
       """
       )
-    chain = prompt | llm
+    chain = {
+        "context": RunnablePassthrough(),
+        "question": RunnablePassthrough()
+    } | prompt | llm
     return chain.invoke({"context": context_str , "question" :query })
 
 
@@ -121,7 +135,11 @@ def generate_response(llm, query: str, context: List, candidate_names: List[str]
     """
     )
 
-    chain = prompt | llm
+    chain = {
+        "context": RunnablePassthrough(),
+        "question": RunnablePassthrough(),
+        "valid_names": RunnablePassthrough()
+    }|prompt | llm
     return chain.invoke({
         "context": context_str,
         "question": query,

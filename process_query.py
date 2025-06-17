@@ -1,22 +1,37 @@
 from vector_store import vector_store_init, search_candidate, get_full_cv, add_candidates
-from RAG_engin import initialize_llm, generate_response, generate_response_who, generate_summary_response
+from llm_config import llm, embeddings
+from RAG_engin import generate_response, generate_response_who, generate_summary_response
 from typing import List
 from process_files import process_uploaded_files
 import os
 from langchain_tavily import TavilySearch
 
-
+from dotenv import load_dotenv
+load_dotenv()
 # Global flag to track if documents have been added
 DOCUMENTS_ADDED = False
 
-file_paths = ["CVs/Mariam-Osama.pdf", "CVs/Reham_Elkasaby.pdf", "CVs/Hager elkasapy.pdf"]
+file_paths = ["CVs/Reham_CV_April_2025[1].pdf","CVs/Hager elkasapy cv.pdf"]
 def process_query(query: str, vector_store=None, llm=None,file_paths=file_paths):
+    from llm_config import llm, embeddings
+
+    """_summary_
+
+    Args:
+        query (str): _description_
+        vector_store (_type_, optional): _description_. Defaults to None.
+        llm (_type_, optional): _description_. Defaults to None.
+        file_paths (_type_, optional): _description_. Defaults to file_paths.
+
+    Returns:
+        _type_: _description_
+    """
     global DOCUMENTS_ADDED
     
     if not vector_store:
         vector_store = vector_store_init()
     if not llm:
-        llm = initialize_llm()
+        llm = llm
     
 
     # Only add documents once per session
@@ -92,10 +107,11 @@ def answer_summarize(query: str, vector_store, llm, candidate_names: List[str]) 
     
 
 def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
-    os.environ["TAVILY_API_KEY"] = "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"
+    
     tavily = TavilySearch(
         max_results=5,
         search_depth="advanced",
+        #include_domains = ['linkedn.com']
     )    
 
     prompt = f"""Based on this summary, generate {k} job search queries:
@@ -103,6 +119,7 @@ def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
     Return ONLY the queries, one per line, no numbering."""
     
     response = llm.invoke(prompt)
+    #response = llm.generate_content(prompt)
     queries_text = response if isinstance(response, str) else response.content
     queries = [q.strip() for q in queries_text.split('\n') if q.strip()][:k]
     
