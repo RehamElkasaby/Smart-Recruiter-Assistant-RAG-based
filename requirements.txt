@@ -15,3 +15,4 @@ google-generativeai
 google-ai-generativelanguage==0.6.15
 langchain_google_genai
 python-dotenv
+pysqlite3-binary
