@@ -1,14 +1,13 @@
 # RAG_engine.py (updated)
 import os
 #from langchain_ollama.llms import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate
 from typing import List
 from llm_config import llm, embeddings
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
 
 def initialize_llm():
-     from llm_config import llm, embeddings
 
 #     return OllamaLLM(
 #         model="phi3",

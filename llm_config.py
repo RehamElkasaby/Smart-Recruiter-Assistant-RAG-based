@@ -1,4 +1,9 @@
+#imports
 import os
+import streamlit as st
+from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 
 try:
@@ -11,15 +16,9 @@ except ImportError:
     MODEL_NAME = "gemini-2.0-flash"
 
 
-#imports
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_google_genai import GoogleGenerativeAI
-
-from langchain_google_genai import ChatGoogleGenerativeAI
-#import google.generativeai as genai
 #Load the models
-GOOGLE_API_KEY= os.environ.get("GEMINI_API_KEY")
-#genai.configure(api_key=GOOGLE_API_KEY)
+GOOGLE_API_KEY= os.getenv("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
+
 
 #llm = GoogleGenerativeAI("models/gemini-2.0-flash",google_api_key=GOOGLE_API_KEY)
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash",google_api_key=GOOGLE_API_KEY,temperature=0)

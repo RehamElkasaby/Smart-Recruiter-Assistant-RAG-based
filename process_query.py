@@ -1,20 +1,20 @@
-from vector_store import vector_store_init, search_candidate, get_full_cv, add_candidates
-from llm_config import llm, embeddings
-from RAG_engin import generate_response, generate_response_who, generate_summary_response
-from typing import List
-from process_files import process_uploaded_files
 import os
-from langchain_tavily import TavilySearch
-
+from typing import List
 from dotenv import load_dotenv
+from llm_config import llm, embeddings
+from langchain_tavily import TavilySearch
+from process_files import process_uploaded_files
+from vector_store import vector_store_init, search_candidate, get_full_cv, add_candidates
+from RAG_engin import generate_response, generate_response_who, generate_summary_response
+
 load_dotenv()
+
 # Global flag to track if documents have been added
 DOCUMENTS_ADDED = False
 
 file_paths = ["CVs/Reham_CV_April_2025[1].pdf","CVs/Hager elkasapy cv.pdf"]
-def process_query(query: str, vector_store=None, llm=None,file_paths=file_paths):
-    from llm_config import llm, embeddings
 
+def process_query(query: str, vector_store=None, llm=None,file_paths=file_paths):
     """_summary_
 
     Args:
@@ -62,7 +62,7 @@ def is_summurize(query: str) -> bool:
     return query.lower().startswith(("summurize", "what skills"))
 
 def is_find_job(query: str) -> bool:
-    return query.lower().startswith(("find job"))
+    return query.lower().startswith(("find a job"))
 
 #*********************************************************************************
 
@@ -111,7 +111,7 @@ def answer_recommend_jobs(summary: str, llm, k: int = 6) -> List[dict]:
     tavily = TavilySearch(
         max_results=5,
         search_depth="advanced",
-        #include_domains = ['linkedn.com']
+        # include_domains = ['linkedn.com']
     )    
 
     prompt = f"""Based on this summary, generate {k} job search queries:

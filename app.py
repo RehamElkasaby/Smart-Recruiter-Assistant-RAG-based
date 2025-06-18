@@ -1,17 +1,17 @@
 import sys
-#import pysqlite3
-#sys.modules["sqlite3"] = pysqlite3
-import pandas as pd
+import pysqlite3
+sys.modules["sqlite3"] = pysqlite3
 import os
 import shutil
-import streamlit as st
-from PIL import Image
-from streamlit_lottie import st_lottie
 import requests
-from process_files import process_uploaded_files
-from process_query import process_query
-from vector_store import vector_store_init, add_candidates
+import pandas as pd
+from PIL import Image
+import streamlit as st
+from streamlit_lottie import st_lottie
 from llm_config import llm, embeddings
+from process_query import process_query
+from process_files import process_uploaded_files
+from vector_store import vector_store_init, add_candidates
 
 
 
@@ -167,7 +167,7 @@ def home():
     # Display native Streamlit button inside styled container
     col1, col2, col3 = st.columns([2, 2, 2])
     with col2:
-        if st.button("🚀 Start Recruiting Smarter", key="start_button",type="primary"):
+        if st.button("🚀 Start Recruiting Smarter",type="primary"):
             st.session_state.page = "CV Parser"
 
 ##########################################
