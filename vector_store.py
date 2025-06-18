@@ -21,7 +21,7 @@ def vector_store_init():
     
     return Chroma(
         collection_name="recruiter_candidates",
-        persist_directory=persist_dir,
+        # persist_directory=persist_dir,
         embedding_function=embeddings 
     )
 
